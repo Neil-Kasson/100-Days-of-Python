@@ -7,32 +7,98 @@ def dealCard():
   card = random.choice(cards)
   return card
 
+userCards = [dealCard(), dealCard()]
+pcCards = [dealCard(), dealCard()]
+gameOver = False
+
+'''in: list of cards in hand
+   out: score based on hand'''
 def getScore(hand):
-  score = 0
-  for n in hand:
-    score += n
+  score = sum(hand)
   if score==21:
     return 0
   if score>21 and 11 in hand:
     hand[hand.index(11)] = 1
+    score = getScore(hand)
   return score
 
-userCards = [dealCard(), dealCard()]
-pcCards = [dealCard(), dealCard()]
+def prompt():
+  words = ("\nYour cards: ")
+  for i in userCards:
+    if i==11:
+      words += "[A] "
+    else:
+      words += ("[" + str(i) + "] ")
+  words += "-- Score = " + str(getScore(userCards))
+  print(words)
+  pcCard = pcCards[0]
+  if pcCard == 11:
+    pcCard = "A"
+  print("Computer's first card: [" + str(pcCard) + "]")
+
+def prompt2():
+  words = ("\nYour cards: ")
+  for i in userCards:
+    if i==11:
+      words += "[A] "
+    else:
+      words += ("[" + str(i) + "] ")
+  words += "-- Score = " + str(getScore(userCards))
+  print(words)
+  words = ("PC cards: ")
+  for i in pcCards:
+    if i==11:
+      words += "[A] "
+    else:
+      words += ("[" + str(i) + "] ")
+  words += "-- Score = " + str(getScore(pcCards))
+  print(words)
+
+def end():
+  userScore = getScore(userCards)
+  if userScore>21:
+    print("\nYou went over 21... You lose")
+  else:
+    while(getScore(pcCards)<17):
+      pcCards.append(dealCard())
+    pcScore = getScore(pcCards)
+    prompt2()
+    if pcScore==userScore:
+      print("\nIt's a draw!!")
+    elif pcScore==0 or (pcScore>userScore and userScore!=0 and pcScore<=21):
+      print("\nYou lose!")
+    elif userScore==0 or pcScore>21 or userScore>pcScore:
+      if userScore==0:
+        print("\n***BLACKJACK***")
+      else:
+        print("\nWinner Winner Chicken Dinner!!!")
+    
+    
+
+def round():
+  gameOver = False
+  userScore = getScore(userCards)
+  pcScore = getScore(pcCards)
+
+  if (userScore==0 or pcScore==0 or userScore>21):
+    gameOver = True
+    if userScore>21:
+      end()
+    else:
+      end()
+  
+  if (gameOver==False):
+    prompt()
+    goAgain = input("\nWould you like another card? (\'yes\' to continue): ")
+    if goAgain=='yes' or goAgain=='y':
+      userCards.append(dealCard())
+      round()
+    else:
+      end()
+
+print(art.logo)
+round()
 
 
 ############### Our Blackjack House Rules #####################
 #   0 = Blackjack
-#Hint 8: Inside calculate_score() check for an 11 (ace). If the score is already over 21, remove the 11 and replace it with a 1. You might need to look up append() and remove().
-
-#Hint 9: Call calculate_score(). If the computer or the user has a blackjack (0) or if the user's score is over 21, then the game ends.
-
-#Hint 10: If the game has not ended, ask the user if they want to draw another card. If yes, then use the deal_card() function to add another card to the user_cards List. If no, then the game has ended.
-
-#Hint 11: The score will need to be rechecked with every new card drawn and the checks in Hint 9 need to be repeated until the game ends.
-
-#Hint 12: Once the user is done, it's time to let the computer play. The computer should keep drawing cards as long as it has a score less than 17.
-
-#Hint 13: Create a function called compare() and pass in the user_score and computer_score. If the computer and user both have the same score, then it's a draw. If the computer has a blackjack (0), then the user loses. If the user has a blackjack (0), then the user wins. If the user_score is over 21, then the user loses. If the computer_score is over 21, then the computer loses. If none of the above, then the player with the highest score wins.
-
-#Hint 14: Ask the user if they want to restart the game. If they answer yes, clear the console and start a new game of blackjack and show the logo from art.py.
